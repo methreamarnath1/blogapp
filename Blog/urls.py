@@ -10,10 +10,7 @@ urlpatterns = [
     path('logout/', views.logout_view, name='logout_url'),
     path('profile/', views.profile_view, name='profile_url'),
     path('profile/reset-password/', views.reset_password_view, name='reset_password_url'),
-    path('deleteblog/<int:id>',views.blog_delete_view,name='deleteblog'),
+    path('deleteblog/<int:id>', views.blog_delete_view, name='deleteblog'),
     path('edit/<int:id>/', views.edit_view, name='edit_blog_url'),
-    path('edit_page/<int:id>/',views.edit_page_view,name='editpage')
-    
-
-
+    path('edit_page/<int:id>/', views.edit_page_view, name='editpage'),
 ]

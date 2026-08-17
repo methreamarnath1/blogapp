@@ -1,0 +1,104 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Blog Post · Blog App</title>
+  
+  {% comment %}
+    <!-- DTL: {% extends "base.html" %} + {% block content %} if you use a shared base template -->
+    <!-- DTL: {% load static %} at the top of the file if you link static assets -->
+  {% endcomment %}
+    
+  <link rel="stylesheet" href="{% static 'styles/blog_detail.css' %}" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <header class="site-header">
+    <div class="header-inner">
+      <a href="{% url 'home_url' %}" class="logo">
+        <span class="logo-text">Blog&nbsp;App</span>
+        <svg class="logo-underline" viewBox="0 0 120 10" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <path d="M2 6 C 26 1, 54 1, 60 5 C 66 9, 92 3, 118 6" stroke="#D68C3A" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+        </svg>
+      </a>
+      <a href="{% url 'home_url' %}" class="btn btn-ghost">&larr; Back to feed</a>
+    </div>
+  </header>
+
+  
+  {% comment %}
+    <!-- DTL: this whole <main> block is for a single blog, so the view should pass one `blog` object
+         (e.g. fetched with get_object_or_404(Blog, pk=blog_id)) to the template context -->
+  {% endcomment %}
+    
+  <main class="post">
+   {% if context %}
+   
+    <article class="post-inner">
+
+      <p class="post-eyebrow">Post</p>
+      <h1 class="post-title">{{ context.title }}</h1>
+      
+      {% comment %}
+        <!-- DTL: {{ blog.title }} -->
+      {% endcomment %}
+        
+
+      <p class="post-meta">
+        By <span class="post-author">{{context.user}}</span> · <span class="post-date">{{context.created_at}}</span>
+        
+        {% comment %}
+          <!-- DTL: By {{ blog.author.username }} · {{ blog.created_at|date:"F j, Y" }} -->
+        {% endcomment %}
+          
+      </p>
+
+      <div class="post-media">
+        <img src="{{ context.blog_poster.url }}" alt="{{ context.title }} />
+        
+        {% comment %}
+          <!-- DTL: src="{{ blog.image.url }}" alt="{{ blog.title }}" -->
+        {% endcomment %}
+          
+      </div>
+
+      <div class="post-content">
+          <p>
+              {{context.description}}
+         </p>
+        
+         
+      </div>
+
+      
+      {% if can_delete %}
+      <div class="post-owner-actions">
+        <a href="{% url 'editpage' context.id %}" class="btn btn-ghost">Edit</a>
+        
+        {% comment %}
+          <!-- DTL: href="{% url 'editpage' blog.id %}" -->
+        {% endcomment %}
+          
+        <form action="{% url 'deleteblog' context.id %}" method="post" class="delete-form">
+          {% csrf_token %}
+          {% comment %}
+            <!-- DTL: action="{% url 'blog_delete' blog.id %}" method="post"; add {% csrf_token %} here -->
+          {% endcomment %}
+            
+          <button type="submit" class="btn btn-delete">Delete post</button>
+        </form>
+      </div>
+      {% endif %}
+        
+
+    </article>
+   {% endif %}
+   
+  </main>
+
+</body>
+</html>

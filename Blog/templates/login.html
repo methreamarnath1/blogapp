@@ -1,0 +1,87 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Log In · Blog App</title>
+  
+  {% comment %}
+    <!-- DTL: If using a shared base template, replace the above <head> boilerplate with
+         {% extends "base.html" %} and wrap the body content below inside {% block content %}...{% endblock %} -->
+    <!-- DTL: {% load static %} at the top of the file if you link static assets -->
+  {% endcomment %}
+    
+  <link rel="stylesheet" href="{% static 'styles/login.css' %}" />
+  
+  {% comment %}
+    <!-- DTL: use href="{% static 'css/login.css' %}" instead of the relative path above -->
+  {% endcomment %}
+    
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+  <main class="auth-page">
+
+    <!-- Left brand panel -->
+    <section class="auth-brand">
+      <div class="brand-mark">
+        <span class="brand-name">Blog&nbsp;App</span>
+        <svg class="brand-underline" viewBox="0 0 180 14" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <path d="M2 9 C 40 2, 80 2, 90 7 C 100 12, 140 4, 178 8" stroke="#D68C3A" stroke-width="3" fill="none" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <p class="brand-tagline">A quiet place to write things down and find them again.</p>
+
+      <ul class="brand-points">
+        <li>Keep every post in one journal</li>
+        <li>Pick up drafts where you left off</li>
+        <li>Share only what you choose to publish</li>
+      </ul>
+    </section>
+
+    <!-- Right form panel -->
+    <section class="auth-form-panel">
+      <div class="auth-form-card">
+        <p class="form-eyebrow">Welcome back</p>
+        <h1 class="form-title">Log in to your journal</h1>
+
+        
+        {% comment %}
+          <!-- DTL: {% if form.errors %}<p class="form-error">Your username or password didn't match.</p>{% endif %}
+               DTL: or use the Django messages framework: {% for message in messages %}...{% endfor %} -->
+        {% endcomment %}
+          
+
+        <h4 style="color: red;">
+          {% for message in messages %}
+            {{ message }}
+          {% endfor %}
+        </h4>
+
+        <form class="auth-form" method="post" novalidate>
+            {% csrf_token %}
+          <div class="field">
+            <label for="username">Username</label>
+            <input type="text" id="username" name="username" placeholder="e.g. rg_writes" autocomplete="username" required />  
+          </div>
+
+          <div class="field">
+            <label for="password">Password</label>
+            <input type="password" id="password" name="password" placeholder="Enter your password" autocomplete="current-password" required />
+          </div>
+
+          <button type="submit" class="btn btn-primary btn-block">Log in</button>
+        </form>
+
+        <p class="auth-switch">
+          Don't have a profile yet?
+          <a href="{% url 'signup_url' %}">Create one</a>
+        </p>
+      </div>
+    </section>
+
+  </main>
+</body>
+</html>

@@ -1,0 +1,519 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Edit Blog · Blog App</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+
+    <style>
+      :root {
+        --paper: #fbf8f2;
+        --paper-raised: #ffffff;
+        --ink: #22201c;
+        --ink-soft: #6b655c;
+        --rule: #e4dcc8;
+        --accent: #d68c3a;
+        --accent-deep: #a85e1e;
+        --danger: #b4432f;
+        --ok: #5c7a5c;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        background: var(--paper);
+        color: var(--ink);
+        font-family: "IBM Plex Sans", system-ui, Arial, sans-serif;
+        line-height: 1.5;
+      }
+
+      /* ---- header (matches detail page) ---- */
+      .site-header {
+        border-bottom: 1px solid var(--rule);
+        background: var(--paper);
+      }
+      .header-inner {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 20px 24px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+      .logo {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        text-decoration: none;
+        color: var(--ink);
+      }
+      .logo-text {
+        font-family: "Fraunces", serif;
+        font-weight: 600;
+        font-size: 1.25rem;
+      }
+      .logo-underline {
+        width: 60px;
+        height: 8px;
+      }
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 9px 16px;
+        border-radius: 6px;
+        border: 1px solid transparent;
+        font-family: "IBM Plex Sans", sans-serif;
+        font-weight: 500;
+        font-size: 0.9rem;
+        cursor: pointer;
+        text-decoration: none;
+        transition:
+          background 0.15s,
+          border-color 0.15s,
+          transform 0.1s;
+      }
+      .btn-ghost {
+        background: transparent;
+        color: var(--ink);
+        border-color: var(--rule);
+      }
+      .btn-ghost:hover {
+        background: #f1ece0;
+      }
+      .btn-primary {
+        background: var(--accent);
+        color: #fff;
+      }
+      .btn-primary:hover {
+        background: var(--accent-deep);
+      }
+      .btn:active {
+        transform: translateY(1px);
+      }
+
+      /* ---- page shell ---- */
+      main.edit {
+        max-width: 760px;
+        margin: 0 auto;
+        padding: 48px 24px 96px;
+      }
+      .post-eyebrow {
+        font-family: "IBM Plex Mono", monospace;
+        font-size: 0.78rem;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--accent-deep);
+        margin: 0 0 8px;
+      }
+      .edit-title {
+        font-family: "Fraunces", serif;
+        font-weight: 600;
+        font-size: 2.4rem;
+        margin: 0 0 6px;
+        letter-spacing: -0.01em;
+      }
+      .edit-meta {
+        color: var(--ink-soft);
+        font-size: 0.92rem;
+        margin: 0 0 32px;
+      }
+      .edit-meta .draft-no {
+        font-family: "IBM Plex Mono", monospace;
+        color: var(--ink);
+      }
+
+      /* ---- the manuscript / proof sheet ---- */
+      .proof-sheet {
+        background: var(--paper-raised);
+        border: 1px solid var(--rule);
+        border-radius: 10px;
+        position: relative;
+        box-shadow:
+          0 1px 2px rgba(34, 32, 28, 0.04),
+          0 8px 24px -12px rgba(34, 32, 28, 0.12);
+        overflow: hidden;
+      }
+      /* perforated top edge */
+      .proof-sheet::before {
+        content: "";
+        display: block;
+        height: 14px;
+        background: radial-gradient(circle, var(--paper) 3px, transparent 3.5px)
+          repeat-x;
+        background-size: 20px 14px;
+        background-position: 10px 0;
+        border-bottom: 1px dashed var(--rule);
+      }
+      .proof-sheet-body {
+        padding: 32px 36px 36px;
+      }
+      @media (max-width: 600px) {
+        .proof-sheet-body {
+          padding: 24px 20px 28px;
+        }
+      }
+
+      form.blog-form {
+        display: flex;
+        flex-direction: column;
+        gap: 28px;
+      }
+
+      .field-block {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+      .field-head {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: 12px;
+      }
+      label {
+        font-family: "IBM Plex Mono", monospace;
+        font-size: 0.78rem;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: var(--ink-soft);
+      }
+      .count {
+        font-family: "IBM Plex Mono", monospace;
+        font-size: 0.78rem;
+        color: var(--ink-soft);
+        white-space: nowrap;
+      }
+      .count.ok {
+        color: var(--ok);
+      }
+      .count.short {
+        color: var(--danger);
+      }
+
+      input[type="text"],
+      textarea {
+        width: 100%;
+        padding: 12px 14px;
+        border: 1px solid var(--rule);
+        border-radius: 6px;
+        background: var(--paper);
+        font-family: "IBM Plex Sans", sans-serif;
+        font-size: 1rem;
+        color: var(--ink);
+        resize: vertical;
+        transition:
+          border-color 0.15s,
+          box-shadow 0.15s;
+      }
+      input[type="text"] {
+        font-family: "Fraunces", serif;
+        font-size: 1.15rem;
+        font-weight: 500;
+      }
+      textarea {
+        min-height: 220px;
+        line-height: 1.65;
+      }
+      input[type="text"]:focus,
+      textarea:focus {
+        outline: none;
+        border-color: var(--accent);
+        box-shadow: 0 0 0 3px rgba(214, 140, 58, 0.18);
+      }
+
+      /* gauge = the signature element: a hairline bar tracking min/max length */
+      .gauge {
+        position: relative;
+        height: 4px;
+        border-radius: 2px;
+        background: var(--rule);
+        overflow: hidden;
+      }
+      .gauge-fill {
+        position: absolute;
+        inset: 0 auto 0 0;
+        width: 0%;
+        background: var(--accent);
+        border-radius: 2px;
+        transition:
+          width 0.12s ease,
+          background-color 0.2s ease;
+      }
+      .gauge-fill.short {
+        background: var(--rule);
+      }
+      .gauge-fill.ok {
+        background: var(--accent);
+      }
+      .gauge-fill.full {
+        background: var(--danger);
+      }
+      .gauge-min-mark {
+        position: absolute;
+        top: -3px;
+        bottom: -3px;
+        width: 2px;
+        background: var(--ink-soft);
+        opacity: 0.35;
+      }
+
+      /* poster upload */
+      .poster-row {
+        display: flex;
+        gap: 16px;
+        align-items: flex-start;
+        flex-wrap: wrap;
+      }
+      .poster-preview {
+        width: 120px;
+        height: 90px;
+        border-radius: 6px;
+        overflow: hidden;
+        border: 1px solid var(--rule);
+        background: var(--paper);
+        flex-shrink: 0;
+      }
+      .poster-preview img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+      }
+      .poster-controls {
+        flex: 1;
+        min-width: 200px;
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+      }
+      input[type="file"] {
+        font-family: "IBM Plex Sans", sans-serif;
+        font-size: 0.9rem;
+        color: var(--ink-soft);
+      }
+      .poster-controls a {
+        color: var(--accent-deep);
+        font-size: 0.88rem;
+      }
+      .file-picked {
+        font-family: "IBM Plex Mono", monospace;
+        font-size: 0.8rem;
+        color: var(--ok);
+      }
+
+      .actions {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding-top: 8px;
+        border-top: 1px solid var(--rule);
+        margin-top: 4px;
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        * {
+          transition: none !important;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="header-inner">
+        <a href="{% url 'home_url' %}" class="logo">
+          <span class="logo-text">Blog&nbsp;App</span>
+          <svg
+            class="logo-underline"
+            viewBox="0 0 120 10"
+            xmlns="http://www.w3.org/2000/svg"
+            aria-hidden="true"
+          >
+            <path
+              d="M2 6 C 26 1, 54 1, 60 5 C 66 9, 92 3, 118 6"
+              stroke="#D68C3A"
+              stroke-width="2.5"
+              fill="none"
+              stroke-linecap="round"
+            />
+          </svg>
+        </a>
+        {% if context %}
+        <a href="{% url 'blog_detail_url' context.id %}" class="btn btn-ghost"
+          >&larr; Back to post</a
+        >
+        {% else %}
+        <a href="{% url 'home_url' %}" class="btn btn-ghost"
+          >&larr; Back to feed</a
+        >
+        {% endif %}
+      </div>
+    </header>
+
+    <main class="edit">
+      {% if context %}
+      <p class="post-eyebrow">Manuscript · Revision</p>
+      <h1 class="edit-title">Edit blog post</h1>
+      <p class="edit-meta">
+        Draft No. <span class="draft-no">{{ context.id }}</span> · originally
+        published as “{{ context.title }}”
+      </p>
+
+      <div class="proof-sheet">
+        <div class="proof-sheet-body">
+          <form
+            action="{% url 'profile_url' %}"
+            method="post"
+            enctype="multipart/form-data"
+            class="blog-form"
+          >
+            {% csrf_token %}
+            <input type="hidden" name="action" value="update_blog" />
+            <input type="hidden" name="blog_id" value="{{ context.id }}" />
+
+            <div class="field-block">
+              <div class="field-head">
+                <label for="title">Title</label>
+                <span class="count" id="title-count">— / 100</span>
+              </div>
+              <input
+                id="title"
+                name="title"
+                type="text"
+                value="{{ context.title }}"
+                required
+                minlength="40"
+                maxlength="100"
+                oninput="updateGauge('title', 40, 100)"
+              />
+              <div class="gauge">
+                <div class="gauge-fill" id="title-gauge"></div>
+                <div class="gauge-min-mark" style="left: 40%"></div>
+              </div>
+            </div>
+
+            <div class="field-block">
+              <div class="field-head">
+                <label for="description">Description</label>
+                <span class="count" id="description-count">— / 1000</span>
+              </div>
+              <textarea
+                id="description"
+                name="description"
+                rows="12"
+                required
+                minlength="400"
+                maxlength="1000"
+                oninput="updateGauge('description', 400, 1000)"
+              >
+{{ context.description }}</textarea
+              >
+              <div class="gauge">
+                <div class="gauge-fill" id="description-gauge"></div>
+                <div class="gauge-min-mark" style="left: 40%"></div>
+              </div>
+            </div>
+
+            <div class="field-block">
+              <label for="blog_poster">Blog poster (optional to replace)</label>
+              <div class="poster-row">
+                <div class="poster-preview" id="poster-preview">
+                  {% if context.blog_poster %}
+                  <img
+                    src="{{ context.blog_poster.url }}"
+                    alt="{{ context.title }}"
+                    id="poster-preview-img"
+                  />
+                  {% endif %}
+                </div>
+                <div class="poster-controls">
+                  <input
+                    id="blog_poster"
+                    name="blog_poster"
+                    type="file"
+                    accept="image/*"
+                    onchange="previewPoster(this)"
+                  />
+                  <span class="file-picked" id="file-picked"></span>
+                  {% if context.blog_poster %}
+                  <a href="{{ context.blog_poster.url }}" target="_blank"
+                    >View current image full size</a
+                  >
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+
+            <div class="actions">
+              <button type="submit" class="btn btn-primary">
+                Save changes
+              </button>
+              <a
+                href="{% url 'blog_detail_url' context.id %}"
+                class="btn btn-ghost"
+                >Cancel</a
+              >
+            </div>
+          </form>
+        </div>
+      </div>
+
+      {% else %}
+      <p>Blog not found.</p>
+      {% endif %}
+    </main>
+
+    <script>
+      function updateGauge(fieldId, min, max) {
+        var el = document.getElementById(fieldId);
+        var fill = document.getElementById(fieldId + "-gauge");
+        var count = document.getElementById(fieldId + "-count");
+        var len = el.value.length;
+        var pct = Math.min(100, (len / max) * 100);
+        fill.style.width = pct + "%";
+
+        fill.classList.remove("short", "ok", "full");
+        count.classList.remove("short", "ok");
+
+        if (len < min) {
+          fill.classList.add("short");
+          count.classList.add("short");
+          count.textContent =
+            len + " / " + max + " · " + (min - len) + " more needed";
+        } else if (len >= max) {
+          fill.classList.add("full");
+          count.textContent = len + " / " + max;
+        } else {
+          fill.classList.add("ok");
+          count.classList.add("ok");
+          count.textContent = len + " / " + max;
+        }
+      }
+
+      function previewPoster(input) {
+        var label = document.getElementById("file-picked");
+        if (input.files && input.files[0]) {
+          label.textContent = "Selected: " + input.files[0].name;
+          var preview = document.getElementById("poster-preview");
+          var url = URL.createObjectURL(input.files[0]);
+          preview.innerHTML =
+            '<img src="' + url + '" alt="New poster preview" />';
+        }
+      }
+
+      document.addEventListener("DOMContentLoaded", function () {
+        updateGauge("title", 40, 100);
+        updateGauge("description", 400, 1000);
+      });
+    </script>
+  </body>
+</html>

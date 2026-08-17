@@ -1,0 +1,116 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Home · Blog App</title>
+  <link rel="stylesheet" href="{% static 'styles/home.css' %}" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <!-- ===== Header ===== -->
+  <header class="site-header">
+    <div class="header-inner">
+
+      <a href="{% url 'home_url' %}" class="logo">
+        
+        {% comment %}
+          <!-- DTL: href="{% url 'home' %}" -->
+        {% endcomment %}
+          
+        <span class="logo-text">Blog&nbsp;App</span>
+        <svg class="logo-underline" viewBox="0 0 120 10" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <path d="M2 6 C 26 1, 54 1, 60 5 C 66 9, 92 3, 118 6" stroke="#D68C3A" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+        </svg>
+      </a>
+
+      <div class="header-actions">
+
+        
+        {% if request.user.is_authenticated == False %}
+        <a href="{% url 'login_url' %}" class="btn btn-amber">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>
+            Login
+          </a>
+        {% else %}
+                <a href="{% url 'blog_create_url' %}" class="btn btn-amber">
+            <svg width="16" hDjango is a high-level Python web framework that helps developers create secure, scalable, and maintainable web applications quickly. It follows the Model-View-Template (MVT) architecture and includes built-in features like authentication, an admin panel, ORM, form handling, and security against common web attacks. Whether you're building a personal blog, an e-commerce platform, or an enterprise application, Django reduces development time by handling repetitive tasks, allowing you to focus on creating great user experiences.eight="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>
+            Create
+          </a>
+          <a href="{% url 'profile_url' %}" class="profile-icon" title="Profile" aria-label="Profile">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <circle cx="12" cy="8" r="4" stroke="currentColor" stroke-width="2"/>
+            <path d="M4 20c1.6-3.6 4.8-5.5 8-5.5s6.4 1.9 8 5.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+        </a>
+          <a href="{% url 'logout_url' %}">
+            <button type="submit" class="btn btn-ghost">Log out</button>
+          </a>
+        
+        {% endif %}
+          
+      </div>
+
+    </div>
+  </header>
+
+  <!-- ===== Main feed ===== -->
+  <main class="feed">
+    <div class="feed-inner">
+
+      <div class="feed-heading">
+        <p class="feed-eyebrow">Your journal</p>
+        <h1>Latest posts</h1>
+      </div>
+
+      
+      {% comment %}
+        <!-- DTL: {% if blogs %} -->
+      {% endcomment %}
+        
+      <div class="blog-grid">
+        
+        {% comment %}
+          <!-- DTL: {% for blog in blogs %} -->
+        {% endcomment %}
+          
+
+        <!-- ===== Blog card (repeat once per blog) ===== -->
+        {% if blogs %}
+            {% for blog in blogs %}
+                  <article class="blog-card">
+          <a href="{% url "blog_detail_url" blog.id %}" class="card-media-link">
+            <div class="card-media">
+              <img src="{{ blog.blog_poster.url }}" alt="Blog cover image" />
+              <span class="pin" aria-hidden="true">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M15.5 3.5 20.5 8.5 13 16l-4-4z" stroke="currentColor" stroke-width="1.8"/><path d="M4 20l5-1.5L7.5 15 6 16.5z" stroke="currentColor" stroke-width="1.8"/></svg>
+              </span>
+            </div>
+          </a>
+          <div class="card-body">
+            <a href="{% url "blog_detail_url" blog.id %} class="card-title-link">
+              <h2 class="card-title">{{ blog.title }}</h2>  
+            </a>
+           {% comment %} <a href=''></a> {% endcomment %}
+          </div>
+        </article>
+            {% endfor %}
+        {% endif %}
+          
+      </div>
+      
+      {% comment %}
+        <!-- DTL: {% else %} -->
+      <!-- DTL: <p class="empty-state">No posts yet. Click "Create" to write your first one.</p> -->
+      <!-- DTL: {% endif %} -->
+      {% endcomment %}
+        
+
+    </div>
+  </main>
+
+</body>
+</html>

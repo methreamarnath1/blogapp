@@ -1,0 +1,493 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Profile · Blog App</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=IBM+Plex+Sans:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --accent: #d68c3a;
+        --accent-dark: #b96f22;
+        --muted: #6b7280;
+        --bg: #f6f0e8;
+        --surface: #fff;
+        --border: rgba(214, 140, 58, 0.18);
+        --danger: #c0392b;
+        --success: #1e824c;
+        --ring: rgba(214, 140, 58, 0.15);
+      }
+      * { box-sizing: border-box; }
+      body {
+        font-family: "IBM Plex Sans", system-ui, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        margin: 0;
+        background: var(--bg);
+        color: #14181f;
+      }
+      h1, h2, h3 { font-family: "Fraunces", Georgia, serif; margin: 0; }
+
+      /* ===== Nav bar (matches home.html) ===== */
+      .site-header {
+        background: var(--surface);
+        border-bottom: 1px solid var(--border);
+        position: sticky;
+        top: 0;
+        z-index: 50;
+      }
+      .header-inner {
+        max-width: 1080px;
+        margin: 0 auto;
+        padding: 14px 20px;
+        display: flex;
+        align-items: center;
+        gap: 20px;
+      }
+      .logo {
+        display: flex;
+        flex-direction: column;
+        text-decoration: none;
+        color: #14181f;
+        line-height: 1;
+      }
+      .logo-text {
+        font-family: "Fraunces", Georgia, serif;
+        font-weight: 600;
+        font-size: 20px;
+      }
+      .logo-underline { width: 96px; height: 8px; margin-top: 2px; }
+      .header-actions {
+        margin-left: auto;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: var(--accent);
+        color: #fff;
+        padding: 9px 14px;
+        border-radius: 8px;
+        border: none;
+        cursor: pointer;
+        font-size: 14px;
+        font-weight: 500;
+        text-decoration: none;
+        transition: background 0.15s ease, transform 0.1s ease;
+      }
+      .btn:hover { background: var(--accent-dark); }
+      .btn:active { transform: scale(0.97); }
+      .btn.ghost {
+        background: transparent;
+        color: var(--muted);
+        border: 1px solid var(--border);
+      }
+      .btn.ghost:hover { background: #faf5ee; color: #14181f; }
+      .btn.danger { background: var(--danger); }
+      .btn.danger:hover { background: #a53324; }
+      .profile-icon {
+        width: 38px;
+        height: 38px;
+        border-radius: 50%;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        background: #fff4e6;
+        color: var(--accent);
+        text-decoration: none;
+        border: 1px solid var(--border);
+      }
+      .profile-icon:hover { background: #ffe9cc; }
+
+      /* ===== Layout ===== */
+      .container { max-width: 980px; margin: 32px auto; padding: 0 20px 60px; }
+
+      .messages { margin-bottom: 18px; display: flex; flex-direction: column; gap: 8px; }
+      .msg {
+        padding: 12px 14px;
+        border-radius: 8px;
+        background: #fff4e6;
+        border: 1px solid rgba(214, 140, 58, 0.3);
+        color: #7b4a1a;
+        font-size: 14px;
+      }
+
+      .card {
+        background: var(--surface);
+        border-radius: 14px;
+        box-shadow: 0 10px 30px rgba(15, 23, 42, 0.06);
+        padding: 24px;
+        margin-bottom: 20px;
+        border: 1px solid var(--border);
+      }
+
+      .top { display: flex; gap: 22px; align-items: center; flex-wrap: wrap; }
+      .avatar {
+        width: 96px;
+        height: 96px;
+        border-radius: 14px;
+        object-fit: cover;
+        border: 2px solid #f2d3a4;
+        flex-shrink: 0;
+      }
+      h1 { font-size: 22px; }
+      .muted { color: var(--muted); font-size: 14px; }
+      .meta { margin-top: 10px; }
+      .actions { margin-left: auto; display: flex; gap: 8px; flex-wrap: wrap; }
+      .info-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+        margin-top: 14px;
+      }
+      .label { font-weight: 600; color: #334155; font-size: 13px; }
+
+      .section-head {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 4px;
+      }
+      .count-pill {
+        background: #fff4e6;
+        color: var(--accent-dark);
+        font-size: 12px;
+        font-weight: 600;
+        padding: 3px 10px;
+        border-radius: 999px;
+      }
+
+      .blogs {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+        gap: 16px;
+        margin-top: 16px;
+      }
+      .blog-item {
+        border-radius: 10px;
+        overflow: hidden;
+        border: 1px solid #f0e0c9;
+        background: #fff;
+        transition: box-shadow 0.15s ease, transform 0.15s ease;
+      }
+      .blog-item:hover { box-shadow: 0 8px 20px rgba(15, 23, 42, 0.08); transform: translateY(-2px); }
+      .blog-thumb { width: 100%; height: 140px; object-fit: cover; display: block; }
+      .blog-body { padding: 14px; }
+      .blog-title { font-weight: 700; margin: 0 0 6px; font-size: 15px; }
+      .blog-desc { color: var(--muted); font-size: 13px; margin: 0 0 10px; line-height: 1.4; }
+      .blog-meta { display: flex; gap: 8px; align-items: center; }
+      .small-btn {
+        background: #fff4e6;
+        color: var(--accent-dark);
+        padding: 6px 10px;
+        border-radius: 6px;
+        border: none;
+        cursor: pointer;
+        font-size: 13px;
+      }
+      .small-btn:hover { background: #ffe9cc; }
+      .small-btn.outline {
+        background: #fff;
+        color: var(--accent-dark);
+        border: 1px solid var(--border);
+        text-decoration: none;
+      }
+      .empty-state { color: var(--muted); padding: 24px; text-align: center; width: 100%; }
+
+      /* ===== Modal overlay ===== */
+      .overlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(20, 24, 31, 0.45);
+        z-index: 100;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+      }
+      .overlay.open { display: flex; }
+      .modal {
+        background: #fff;
+        border-radius: 14px;
+        width: 100%;
+        max-width: 440px;
+        padding: 24px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+        max-height: 90vh;
+        overflow-y: auto;
+      }
+      .modal-head {
+        display: flex;
+        align-items: center;
+        margin-bottom: 16px;
+      }
+      .modal-close {
+        margin-left: auto;
+        background: none;
+        border: none;
+        cursor: pointer;
+        color: var(--muted);
+        font-size: 18px;
+        line-height: 1;
+        padding: 4px;
+      }
+      .modal-close:hover { color: #14181f; }
+
+      form.inline { display: flex; flex-direction: column; gap: 12px; }
+      label.field-label { font-size: 13px; font-weight: 600; color: #334155; margin-bottom: -4px; }
+      input[type="text"], input[type="password"], textarea, input[type="file"] {
+        padding: 10px;
+        border: 1px solid #e6dccc;
+        border-radius: 8px;
+        font-family: inherit;
+        font-size: 14px;
+        width: 100%;
+      }
+      input:focus, textarea:focus {
+        outline: none;
+        border-color: var(--accent);
+        box-shadow: 0 0 0 3px var(--ring);
+      }
+      textarea { resize: vertical; }
+      .form-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 4px; }
+      .hint { font-size: 12px; color: var(--muted); }
+
+      @media (max-width: 560px) {
+        .top { flex-direction: column; align-items: flex-start; }
+        .actions { margin-left: 0; width: 100%; }
+        .info-grid { grid-template-columns: 1fr; }
+      }
+    </style>
+  </head>
+  <body>
+
+    <!-- ===== Nav bar ===== -->
+    <header class="site-header">
+      <div class="header-inner">
+        <a href="{% url 'home_url' %}" class="logo">
+          <span class="logo-text">Blog&nbsp;App</span>
+          <svg class="logo-underline" viewBox="0 0 120 10" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <path d="M2 6 C 26 1, 54 1, 60 5 C 66 9, 92 3, 118 6" stroke="#D68C3A" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+          </svg>
+        </a>
+        <div class="header-actions">
+          <a href="{% url 'home_url' %}" class="btn ghost">Home</a>
+          <a href="{% url 'blog_create_url' %}" class="btn btn-amber">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>
+            Create
+          </a>
+          <a href="{% url 'profile_url' %}" class="profile-icon" title="Profile" aria-label="Profile">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <circle cx="12" cy="8" r="4" stroke="currentColor" stroke-width="2"/>
+              <path d="M4 20c1.6-3.6 4.8-5.5 8-5.5s6.4 1.9 8 5.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+          </a>
+          <a href="{% url 'logout_url' %}" class="btn ghost">Log out</a>
+        </div>
+      </div>
+    </header>
+
+    <div class="container">
+      {% if messages %}
+      <div class="messages">
+        {% for message in messages %}
+        <div class="msg">{{ message }}</div>
+        {% endfor %}
+      </div>
+      {% endif %}
+
+      <!-- ===== Profile card ===== -->
+      <div class="card">
+        <div class="top">
+          <img
+            class="avatar"
+            src="{% if profile.profile_pic %}{{ profile.profile_pic.url }}{% else %}https://via.placeholder.com/96{% endif %}"
+            alt="avatar"
+            onerror="this.src = 'https://via.placeholder.com/96'"
+          />
+          <div>
+            <h1>{{ profile.fullname }}</h1>
+            <div class="muted">
+              Member: {{ profile.user.username }} &bull; Joined: {{ profile.created_at|date:'M d, Y' }}
+            </div>
+            <div class="meta info-grid">
+              <div>
+                <div class="label">Email</div>
+                <div class="muted">{{ profile.user.email }}</div>
+              </div>
+              <div>
+                <div class="label">Last updated</div>
+                <div class="muted">{{ profile.updated_at|date:'M d, Y'|default:"—" }}</div>
+              </div>
+            </div>
+          </div>
+          <div class="actions">
+            <button class="btn" onclick="document.getElementById('profile-edit-modal').classList.add('open')">
+              Edit Profile
+            </button>
+            <button class="btn ghost" onclick="document.getElementById('reset-password-modal').classList.add('open')">
+              Reset Password
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== Blogs card ===== -->
+      <div class="card">
+        <div class="section-head">
+          <h2>My Blogs</h2>
+          <span class="count-pill">{{ blogs.count }}</span>
+          <div style="margin-left: auto">
+            <button class="btn" onclick="document.getElementById('new-blog-modal').classList.add('open')">
+              New Blog
+            </button>
+          </div>
+        </div>
+
+        <div class="blogs">
+          {% for blog in blogs %}
+          <div class="blog-item">
+            <img
+              class="blog-thumb"
+              src="{{ blog.blog_poster.url }}"
+              alt="poster"
+              onerror="this.src = 'https://via.placeholder.com/400x200'"
+            />
+            <div class="blog-body">
+              <div class="blog-title">{{ blog.title }}</div>
+              <div class="blog-desc">{{ blog.description|truncatechars:120 }}</div>
+              <div class="blog-meta">
+                <div class="muted">{{ blog.created_at|date:'M d, Y' }}</div>
+                <div style="margin-left: auto; display:flex; gap:6px;">
+                  <button class="small-btn" onclick="document.getElementById('edit-blog-{{ blog.id }}').classList.add('open')">
+                    Edit
+                  </button>
+                  <a href="{% url 'blog_detail_url' blog.id %}" class="small-btn outline">Open</a>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Edit blog modal -->
+          <div id="edit-blog-{{ blog.id }}" class="overlay">
+            <div class="modal">
+              <div class="modal-head">
+                <h3>Edit Blog</h3>
+                <button type="button" class="modal-close" onclick="document.getElementById('edit-blog-{{ blog.id }}').classList.remove('open')">&times;</button>
+              </div>
+              <form method="post" enctype="multipart/form-data" action="" class="inline">
+                {% csrf_token %}
+                <input type="hidden" name="blog_id" value="{{ blog.id }}" />
+                <label class="field-label">Title</label>
+                <input type="text" name="title" value="{{ blog.title }}" required />
+                <label class="field-label">Description</label>
+                <textarea name="description" rows="4" required>{{ blog.description }}</textarea>
+                <label class="field-label">Change poster (optional)</label>
+                <input type="file" name="blog_poster" accept="image/*" />
+                <div class="form-actions">
+                  <button type="button" class="btn ghost" onclick="document.getElementById('edit-blog-{{ blog.id }}').classList.remove('open')">Cancel</button>
+                  <button type="submit" name="action" value="update_blog" class="btn">Save</button>
+                </div>
+              </form>
+            </div>
+          </div>
+          {% empty %}
+          <div class="empty-state">No blogs yet. Use "New Blog" to create one.</div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== Edit profile modal ===== -->
+    <div id="profile-edit-modal" class="overlay">
+      <div class="modal">
+        <div class="modal-head">
+          <h3>Edit Profile</h3>
+          <button type="button" class="modal-close" onclick="document.getElementById('profile-edit-modal').classList.remove('open')">&times;</button>
+        </div>
+        <form method="post" enctype="multipart/form-data" action="" class="inline">
+          {% csrf_token %}
+          <label class="field-label">Full name</label>
+          <input type="text" name="fullname" value="{{ profile.fullname }}" placeholder="Full name" required />
+          <label class="field-label">Profile picture</label>
+          <input type="file" name="profile_pic" accept="image/*" />
+          <div class="form-actions">
+            <button type="button" class="btn ghost" onclick="document.getElementById('profile-edit-modal').classList.remove('open')">Cancel</button>
+            <button type="submit" name="action" value="update_profile" class="btn">Save</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- ===== Reset password modal ===== -->
+    <div id="reset-password-modal" class="overlay">
+      <div class="modal">
+        <div class="modal-head">
+          <h3>Reset Password</h3>
+          <button type="button" class="modal-close" onclick="document.getElementById('reset-password-modal').classList.remove('open')">&times;</button>
+        </div>
+        <form method="post" action="{% url 'reset_password_url' %}" class="inline">
+          {% csrf_token %}
+          <label class="field-label">Current password</label>
+          <input type="password" name="old_password" placeholder="Current password" required />
+          <label class="field-label">New password</label>
+          <input type="password" name="new_password" placeholder="New password" required />
+          <div class="hint">Must be at least 8 characters.</div>
+          <label class="field-label">Confirm new password</label>
+          <input type="password" name="confirm_password" placeholder="Confirm new password" required />
+          <div class="form-actions">
+            <button type="button" class="btn ghost" onclick="document.getElementById('reset-password-modal').classList.remove('open')">Cancel</button>
+            <button type="submit" class="btn">Update Password</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- ===== New blog modal ===== -->
+    <div id="new-blog-modal" class="overlay">
+      <div class="modal">
+        <div class="modal-head">
+          <h3>New Blog</h3>
+          <button type="button" class="modal-close" onclick="document.getElementById('new-blog-modal').classList.remove('open')">&times;</button>
+        </div>
+        <form method="post" enctype="multipart/form-data" action="" class="inline">
+          {% csrf_token %}
+          <label class="field-label">Title</label>
+          <input type="text" name="title" placeholder="Title (40–100 characters)" required />
+          <label class="field-label">Description</label>
+          <textarea name="description" rows="5" placeholder="Short description (400–1000 characters)" required></textarea>
+          <label class="field-label">Poster image</label>
+          <input type="file" name="blog_poster" accept="image/*" required />
+          <div class="form-actions">
+            <button type="button" class="btn ghost" onclick="document.getElementById('new-blog-modal').classList.remove('open')">Cancel</button>
+            <button type="submit" name="action" value="create_blog" class="btn">Create</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <script>
+      // Close modal when clicking outside the dialog
+      document.querySelectorAll('.overlay').forEach(function (overlay) {
+        overlay.addEventListener('click', function (e) {
+          if (e.target === overlay) overlay.classList.remove('open');
+        });
+      });
+      // Reopen the relevant modal automatically if server redirected back with errors
+      {% if messages %}
+        {% for message in messages %}
+          {% if 'assword' in message.message %}
+            document.getElementById('reset-password-modal').classList.add('open');
+          {% endif %}
+        {% endfor %}
+      {% endif %}
+    </script>
+  </body>
+</html>
